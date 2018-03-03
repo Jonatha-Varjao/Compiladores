@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+from tkinter import *
 #Class converter infixa->posfixa
 class Converter:
     # construtor contendo
@@ -9,10 +10,16 @@ class Converter:
         self.pilhaOP = []
         self.lista = []
         self.tokens = { '+': 1, '-': 1, '*': 3, '/': 3, '.': 3, '(':0, ')':0 }
-    # criar funções auxiliadoras / nem precisa essa merda é python
-    # isEmpty
-    # peek
+    # TODO : o Alias do '\' para aceitar operando/operadores como operando
+    # Ex :   Infixa: a+\+ -> Posfixa: a\++
+
+    def concatenacao_implicita(self, expressao):
+        
+        return expressao
+
     def infixa_posfixa(self, string):
+        if list(string).count('(') - list(string).count(')') != 0:
+            return -1
         for i in range(len(string)):
             # Caractere operando
             if string[i] not in self.tokens:
@@ -26,7 +33,6 @@ class Converter:
                         self.lista.append(self.pilhaOP.pop())
                     self.pilhaOP.pop()
                 except (IndexError, ValueError):
-                    print("Expressao invalida")
                     return -1
             # Caractere operando
             elif string[i] in self.tokens:
@@ -47,16 +53,46 @@ class Converter:
                     self.pilhaOP.append(string[i])
                     print(self.pilhaOP)
         print('Pilha dps de percorer a palavra: ', self.pilhaOP)
-        if self.pilhaOP.count('(') - self.pilhaOP.count(')') > 0:
-            print('Expressao invalida')
-            return -1
         while( self.pilhaOP != [] ):
             print("Pilha OP nao vazia ao final da leitura")
             self.lista.append(self.pilhaOP.pop())
-        return print(self.pilhaOP, self.lista)
+        return print(self.pilhaOP, self.lista) 
+        #return self.lista
+    
+    def validacao_posfixa(self, *kwargs):
+        if kwargs.__contains__(-1) or not self.lista :
+            sys.exit("Expressao invalida")
+        else:
+            print(self.lista, self.pilhaOP)
+            for i in range(len(self.lista)):
+                print(self.lista, self.pilhaOP)
+                # simbolo operando
+                if self.lista[i] not in self.tokens:
+                    print("Operando", self.lista[i])
+                    self.pilhaOP.append(self.lista[i])
+                else :
+                    if self.pilhaOP:
+                        op2 = self.pilhaOP.pop()
+                        if op2 in self.tokens:
+                            print("operador", self.lista[i])
+                            self.pilhaOP.append("&")
+                        else:
+                            if self.pilhaOP :
+                                self.pilhaOP.append(self.pilhaOP.pop())
+                            else:
+                                sys.exit("Expressao invalida")
+                                break
+                    else:
+                        sys.exit("Expressao invalida")
+                        break   
+            print(self.pilhaOP)
+            op1 = self.pilhaOP.pop()
+            if not self.pilhaOP:
+                print("Expressao valida")
+            print(self.lista)
 
 if __name__ ==  "__main__":
     
     c = Converter()
-    c.infixa_posfixa(sys.argv[1])
-    
+    #c.infixa_posfixa(sys.argv[1])
+    c.validacao_posfixa(c.infixa_posfixa(sys.argv[1]))
