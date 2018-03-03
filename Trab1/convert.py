@@ -9,17 +9,62 @@ class Converter:
     def __init__(self):
         self.pilhaOP = []
         self.lista = []
-        self.tokens = { '+': 1, '-': 1, '*': 3, '/': 3, '.': 3, '(':0, ')':0 }
+        self.tokens = { '+': 1, '-': 1, '*': 4, '/': 3, '.': 3, '(':0, ')':0 }
     # TODO : o Alias do '\' para aceitar operando/operadores como operando
     # Ex :   Infixa: a+\+ -> Posfixa: a\++
+    # TODO : Aceitar a concatenação explicita no input  
 
-    def concatenacao_implicita(self, expressao):
-        
-        return expressao
+    def isOperando(self, palavra):
+        # melhorar isso aqui
+        if palavra != '+' and palavra != '-' and palavra !=  '/' and palavra  != '(' and palavra != ')' and palavra != '*' :
+            return True
+        else:
+            print("tokens")
+            return False
+
+    def remove_whitespace(self, string):
+        return string.replace(" ","")
+    
+    def concatenacao_implicita(self, string):
+        if list(string).count('(') - list(string).count(')') != 0:
+            sys.exit("Expressao invalida")
+        lista = []
+        for i in range(len(string)):
+            if not lista:
+                lista.append(string[i])
+            # Operando + Operando -> Concatenacao Implicida
+            elif self.isOperando(string[i]) and self.isOperando(lista[-1]):
+                lista.append(".")
+                lista.append(string[i])
+            # Fecha parenteses + Operando
+            elif self.isOperando(string[i]) and lista[-1] == ')':
+                lista.append(".")
+                lista.append(string[i])
+            # )( ->  ).(
+            elif string[i] == '(' and lista[-1] == ')':
+                lista.append(".")
+                lista.append(string[i])
+            # Operando + (
+            elif self.isOperando(lista[-1]) and string[i] == '(':
+                lista.append(".")
+                lista.append(string[i])
+            # Operando + * ->   
+            elif self.isOperando(string[i]) and lista[-1] == '*' :
+                lista.append(".")
+                lista.append(string[i])
+            
+            # Operador -> Adiciono na lista
+            elif not self.isOperando(string[i]):
+                lista.append(string[i])
+                print(lista)
+            # Operador + Operando -> Adiciono o Operando na lista 
+            elif self.isOperando(string[i]) and not self.isOperando(lista[-1]):
+                lista.append(string[i])
+           
+        return lista
 
     def infixa_posfixa(self, string):
-        if list(string).count('(') - list(string).count(')') != 0:
-            return -1
+        
         for i in range(len(string)):
             # Caractere operando
             if string[i] not in self.tokens:
@@ -63,7 +108,6 @@ class Converter:
         if kwargs.__contains__(-1) or not self.lista :
             sys.exit("Expressao invalida")
         else:
-            print(self.lista, self.pilhaOP)
             for i in range(len(self.lista)):
                 print(self.lista, self.pilhaOP)
                 # simbolo operando
@@ -72,27 +116,32 @@ class Converter:
                     self.pilhaOP.append(self.lista[i])
                 else :
                     if self.pilhaOP:
-                        op2 = self.pilhaOP.pop()
-                        if op2 in self.tokens:
+                        self.pilhaOP.pop()
+                        if self.lista[i] == '*':
                             print("operador", self.lista[i])
                             self.pilhaOP.append("&")
+                        elif self.pilhaOP :
+                            self.pilhaOP.pop()
+                            self.pilhaOP.append("&")
                         else:
-                            if self.pilhaOP :
-                                self.pilhaOP.append(self.pilhaOP.pop())
-                            else:
-                                sys.exit("Expressao invalida")
-                                break
+                            sys.exit("Expressao invalidA ")
                     else:
                         sys.exit("Expressao invalida")
-                        break   
-            print(self.pilhaOP)
+            
+            print(self.lista, self.pilhaOP)
             op1 = self.pilhaOP.pop()
             if not self.pilhaOP:
                 print("Expressao valida")
-            print(self.lista)
+            
+            return self.lista
+
+    def validacao_input(self, expressao):
+        return self.validacao_posfixa(self.infixa_posfixa(self.concatenacao_implicita(self.remove_whitespace(expressao))))
+        
 
 if __name__ ==  "__main__":
     
     c = Converter()
-    #c.infixa_posfixa(sys.argv[1])
-    c.validacao_posfixa(c.infixa_posfixa(sys.argv[1]))
+    #c.concatenacao_implicita(sys.argv[1])
+    #c.validacao_posfixa(c.infixa_posfixa(sys.argv[1]))
+    c.validacao_input(sys.argv[1])
