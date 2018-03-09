@@ -16,10 +16,9 @@ class Converter:
 
     def isOperando(self, palavra):
         # melhorar isso aqui
-        if palavra != '+' and palavra != '-' and palavra !=  '/' and palavra  != '(' and palavra != ')' and palavra != '*' :
+        if palavra != '+' and palavra != '-' and palavra !=  '/' and palavra  != '(' and palavra != ')' and palavra != '*' and palavra != '.' :
             return True
         else:
-            print("tokens")
             return False
 
     def remove_whitespace(self, string):
@@ -52,7 +51,6 @@ class Converter:
             elif self.isOperando(string[i]) and lista[-1] == '*' :
                 lista.append(".")
                 lista.append(string[i])
-            
             # Operador -> Adiciono na lista
             elif not self.isOperando(string[i]):
                 lista.append(string[i])
@@ -60,11 +58,11 @@ class Converter:
             # Operador + Operando -> Adiciono o Operando na lista 
             elif self.isOperando(string[i]) and not self.isOperando(lista[-1]):
                 lista.append(string[i])
-           
+        
+        print("Concatenacao Implicita", lista)
         return lista
 
     def infixa_posfixa(self, string):
-        
         for i in range(len(string)):
             # Caractere operando
             if string[i] not in self.tokens:
@@ -132,7 +130,6 @@ class Converter:
             op1 = self.pilhaOP.pop()
             if not self.pilhaOP:
                 print("Expressao valida")
-            
             return self.lista
 
     def validacao_input(self, expressao):
@@ -144,4 +141,4 @@ if __name__ ==  "__main__":
     c = Converter()
     #c.concatenacao_implicita(sys.argv[1])
     #c.validacao_posfixa(c.infixa_posfixa(sys.argv[1]))
-    c.validacao_input(sys.argv[1])
+    print(c.validacao_input(sys.argv[1]))
