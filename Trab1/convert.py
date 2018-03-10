@@ -65,7 +65,6 @@ class Converter:
             elif self.isOperando(lista[-1]):
                 # Operando + Operando -> Concatenacao Implicida
                 if self.isOperando(string[i]): 
-                    print("openrando + operando")
                     lista.append(".")
                     lista.append(string[i])
                 # Operando + ( -> a.(
@@ -105,7 +104,12 @@ class Converter:
                         if string[i] == '|' or self.isOperando(string[i]):
                             lista.append(".")
                             lista.append(string[i])
-                        else :
+                        elif string[i] == '(' :
+                            lista.append(".")
+                            lista.append(string[i])
+                        elif string[i] == ')':
+                            lista.append(string[i])
+                        elif string[i] == '*':
                             lista.append(string[i])
                     else:
                         lista.append(string[i])
@@ -167,8 +171,9 @@ class Converter:
             else:
                 new_list.append(self.lista[i])
         self.lista = new_list
+        
         print(self.lista)
-        return new_list
+        return self.lista
         #return print(self.pilhaOP, self.lista) 
         #return self.remove_whitespace(self.lista)
         
@@ -195,7 +200,6 @@ class Converter:
                             sys.exit("Expressao invalidA ")
                     else:
                         sys.exit("Expressao invalida")
-            
             print(self.lista, self.pilhaOP)
             op1 = self.pilhaOP.pop()
             if not self.pilhaOP:
@@ -211,6 +215,5 @@ if __name__ ==  "__main__":
     c = Converter()
     #c.conta_barra(sys.argv[1])
     #c.concatenacao_implicita(sys.argv[1])
-    print(c.remove_whitespace(sys.argv[1]))
-    c.validacao_posfixa(c.infixa_posfixa(c.concatenacao_implicita(c.remove_whitespace(sys.argv[1]))))
-    #print(c.validacao_input(sys.argv[1]))
+    #c.validacao_posfixa(c.infixa_posfixa(c.concatenacao_implicita(c.remove_whitespace(sys.argv[1]))))
+    print(c.validacao_input(sys.argv[1]))
