@@ -10,54 +10,105 @@ class Converter:
         self.pilhaOP = []
         self.lista = []
         self.tokens = { '+': 1, '-': 1, '*': 4, '/': 3, '.': 3, '(':0, ')':0 }
-    # TODO : o Alias do '\' para aceitar operando/operadores como operando
-    # Ex :   Infixa: a+\+ -> Posfixa: a\++
-    # TODO : Aceitar a concatenação explicita no input  
+    # TODO: o Alias do '\' para aceitar operando/operadores como operando
+    # Ex :   Infixa: a+|+ -> Posfixa: a|++
+    # TODO: Aceitar a concatenação explicita no input  
 
     def isOperando(self, palavra):
         # melhorar isso aqui
+        # que nada...deixa assim mesmo 
         if palavra != '+' and palavra != '-' and palavra !=  '/' and palavra  != '(' and palavra != ')' and palavra != '*' and palavra != '.' :
             return True
         else:
             return False
 
+    # pra nao bugar a concatenacao explicita
     def remove_whitespace(self, string):
         return string.replace(" ","")
     
-    def concatenacao_implicita(self, string):
-        if list(string).count('(') - list(string).count(')') != 0:
+    # Se o professor pedi pra por |( ou |) é sacanagem.....
+    def conta_barra(self, string):
+        soma = 0
+        for i in range(len(string)):
+            if string[i] == '(':
+                try :
+                    if string[i-1] == '|':
+                        pass
+                    else:
+                        soma = soma + 1
+                except:
+                    soma = soma + 1
+            elif string[i] == ')':
+                try :
+                    if string[i-1] == '|':
+                        pass
+                    else:
+                        soma = soma - 1    
+                except:
+                    soma = soma - 1
+        if soma != 0 :
             sys.exit("Expressao invalida")
+        return string
+
+    def concatenacao_implicita(self, string):
+        string = self.conta_barra(string)
         lista = []
         for i in range(len(string)):
+            print("Lista: ", lista, "String: ", string[i])
             if not lista:
                 lista.append(string[i])
-            # Operando + Operando -> Concatenacao Implicida
-            elif self.isOperando(string[i]) and self.isOperando(lista[-1]):
-                lista.append(".")
+            elif lista[-1] == '|':
                 lista.append(string[i])
-            # Fecha parenteses + Operando
-            elif self.isOperando(string[i]) and lista[-1] == ')':
-                lista.append(".")
-                lista.append(string[i])
-            # )( ->  ).(
-            elif string[i] == '(' and lista[-1] == ')':
-                lista.append(".")
-                lista.append(string[i])
-            # Operando + (
-            elif self.isOperando(lista[-1]) and string[i] == '(':
-                lista.append(".")
-                lista.append(string[i])
-            # Operando + * ->   
-            elif self.isOperando(string[i]) and lista[-1] == '*' :
-                lista.append(".")
-                lista.append(string[i])
-            # Operador -> Adiciono na lista
-            elif not self.isOperando(string[i]):
-                lista.append(string[i])
-                print(lista)
+            elif self.isOperando(lista[-1]):
+                # Operando + Operando -> Concatenacao Implicida
+                if self.isOperando(string[i]): 
+                    print("openrando + operando")
+                    lista.append(".")
+                    lista.append(string[i])
+                # Operando + ( -> a.(
+                elif string[i] == '(':
+                    print("openrando + (")
+                    lista.append(".")
+                    lista.append(string[i])
+                elif not self.isOperando(string[i]):
+                    lista.append(string[i])
+            # ) + Operando -> ) . Operando
+            elif lista[-1] == ')':
+                if self.isOperando(string[i]):
+                    print(" ) + x")
+                    lista.append(".")
+                    lista.append(string[i])
+                elif string[i] == '(':
+                    print(" ) + (")
+                    lista.append(".")
+                    lista.append(string[i])
+                elif not self.isOperando(string[i]):
+                    lista.append(string[i])
+            elif lista[-1] == '*' :
+                #  * + Operando ->   *.Operando
+                if self.isOperando(string[i]):
+                    lista.append(".")
+                    lista.append(string[i])
+                # * + ( ->  *.(
+                elif string[i] == '(':
+                    lista.append(".")
+                    lista.append(string[i])
+                elif not self.isOperando(string[i]):
+                    lista.append(string[i])
             # Operador + Operando -> Adiciono o Operando na lista 
-            elif self.isOperando(string[i]) and not self.isOperando(lista[-1]):
-                lista.append(string[i])
+            elif not self.isOperando(lista[-1]):
+                try:
+                    if lista[-2] == '|':
+                        if string[i] != '(':
+                            lista.append(string[i])
+                        else :
+                            lista.append(".")
+                            lista.append(string[i])
+                    else:
+                        lista.append(string[i])
+                except:
+                    lista.append(string[i])
+
         
         print("Concatenacao Implicita", lista)
         return lista
@@ -139,6 +190,7 @@ class Converter:
 if __name__ ==  "__main__":
     
     c = Converter()
-    #c.concatenacao_implicita(sys.argv[1])
+    #c.conta_barra(sys.argv[1])
+    c.concatenacao_implicita(sys.argv[1])
     #c.validacao_posfixa(c.infixa_posfixa(sys.argv[1]))
-    print(c.validacao_input(sys.argv[1]))
+    #print(c.validacao_input(sys.argv[1]))
