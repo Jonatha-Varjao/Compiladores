@@ -58,6 +58,8 @@ class Converter:
             if not lista:
                 lista.append(string[i])
             elif lista[-1] == '|':
+                if string[i] == '|':
+                    sys.exit("Expressao invalida")
                 lista.append(string[i])
             elif self.isOperando(lista[-1]):
                 # Operando + Operando -> Concatenacao Implicida
@@ -99,10 +101,10 @@ class Converter:
             elif not self.isOperando(lista[-1]):
                 try:
                     if lista[-2] == '|':
-                        if string[i] != '(':
+                        if string[i] == '|' or self.isOperando(string[i]):
+                            lista.append(".")
                             lista.append(string[i])
                         else :
-                            lista.append(".")
                             lista.append(string[i])
                     else:
                         lista.append(string[i])
@@ -115,13 +117,22 @@ class Converter:
 
     def infixa_posfixa(self, string):
         for i in range(len(string)):
+            print('Posfixa: ', self.lista, 'PilhaOP: ', self.pilhaOP)
             # Caractere operando
-            if string[i] not in self.tokens:
+            if string[i] == '|':
                 self.lista.append(string[i])
-                print('Posfixa: ', self.lista)
-            elif string[i] == '(':
+            
+            elif string[-1] == '|':
+                self.lista.append(string[i])
+            
+            elif string[i] not in self.tokens:
+                self.lista.append(string[i])
+            
+            elif string[i] == '(' and self.lista[-1] != '|' :
                 self.pilhaOP.append(string[i])
-            elif string[i] == ')':
+            
+            elif string[i] == ')' and self.lista[-1] != '|' :
+                print("Ultimo elemento pos fixa", self.lista[-1])
                 try:
                     while(self.pilhaOP[-1] != '('):
                         self.lista.append(self.pilhaOP.pop())
@@ -132,7 +143,6 @@ class Converter:
             elif string[i] in self.tokens:
                 if self.pilhaOP == []:
                     self.pilhaOP.append(string[i])
-                    print('PilhaPOP: ', self.pilhaOP)
                 else:
                     try:
                         while( self.tokens.get(self.pilhaOP[-1]) >= self.tokens.get(string[i]) ):
@@ -191,6 +201,9 @@ if __name__ ==  "__main__":
     
     c = Converter()
     #c.conta_barra(sys.argv[1])
-    c.concatenacao_implicita(sys.argv[1])
-    #c.validacao_posfixa(c.infixa_posfixa(sys.argv[1]))
+    #c.concatenacao_implicita(sys.argv[1])
+    c.validacao_posfixa(
+        c.infixa_posfixa(
+        c.concatenacao_implicita(
+        c.remove_whitespace(sys.argv[1]))))
     #print(c.validacao_input(sys.argv[1]))
