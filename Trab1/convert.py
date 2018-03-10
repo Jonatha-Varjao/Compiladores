@@ -24,7 +24,7 @@ class Converter:
 
     # pra nao bugar a concatenacao explicita
     def remove_whitespace(self, string):
-        return string.replace(" ","")
+        return str(string).replace(" ","")
     
     # Se o professor pedi pra por |( ou |) é sacanagem.....
     def conta_barra(self, string):
@@ -50,6 +50,7 @@ class Converter:
             sys.exit("Expressao invalida")
         return string
 
+    # miu grau
     def concatenacao_implicita(self, string):
         string = self.conta_barra(string)
         lista = []
@@ -115,24 +116,21 @@ class Converter:
         print("Concatenacao Implicita", lista)
         return lista
 
+    # TODO: aceitar a implementacao do |& como operando
     def infixa_posfixa(self, string):
+        i = 0
         for i in range(len(string)):
             print('Posfixa: ', self.lista, 'PilhaOP: ', self.pilhaOP)
+            print("Index: ", i)
             # Caractere operando
             if string[i] == '|':
-                self.lista.append(string[i])
-            
-            elif string[-1] == '|':
-                self.lista.append(string[i])
-            
+                self.lista.append(string[i]+string[i+1])
+                string[i+1] = ""
             elif string[i] not in self.tokens:
                 self.lista.append(string[i])
-            
             elif string[i] == '(' and self.lista[-1] != '|' :
                 self.pilhaOP.append(string[i])
-            
             elif string[i] == ')' and self.lista[-1] != '|' :
-                print("Ultimo elemento pos fixa", self.lista[-1])
                 try:
                     while(self.pilhaOP[-1] != '('):
                         self.lista.append(self.pilhaOP.pop())
@@ -147,22 +145,33 @@ class Converter:
                     try:
                         while( self.tokens.get(self.pilhaOP[-1]) >= self.tokens.get(string[i]) ):
                             print( self.tokens.get(self.pilhaOP[-1])," > ",self.tokens.get(string[i]) )
-                            print('Pilha antes do pop: ',self.pilhaOP)
+                            #print('Pilha antes do pop: ',self.pilhaOP)
                             self.lista.append(self.pilhaOP.pop())
-                            print('Lista: ',self.lista)
-                            print('Pilha depois do pop: ',self.pilhaOP)
+                            #print('Lista: ',self.lista)
+                            #print('Pilha depois do pop: ',self.pilhaOP)
                     except IndexError:
                         #self.lista.append(string[i])
                         print('Exception: ', self.lista)
                     self.pilhaOP.append(string[i])
-                    print(self.pilhaOP)
+                    #print(self.pilhaOP)
         print('Pilha dps de percorer a palavra: ', self.pilhaOP)
         while( self.pilhaOP != [] ):
             print("Pilha OP nao vazia ao final da leitura")
             self.lista.append(self.pilhaOP.pop())
-        return print(self.pilhaOP, self.lista) 
-        #return self.lista
-    
+        print(self.lista)
+        # limpando os '' da minha lista antes de jogar na validacao pos_fixa
+        new_list = []
+        for i in range(len(self.lista)):
+            if self.lista[i] == '':
+                pass
+            else:
+                new_list.append(self.lista[i])
+        self.lista = new_list
+        print(self.lista)
+        return new_list
+        #return print(self.pilhaOP, self.lista) 
+        #return self.remove_whitespace(self.lista)
+        
     def validacao_posfixa(self, *kwargs):
         if kwargs.__contains__(-1) or not self.lista :
             sys.exit("Expressao invalida")
@@ -202,8 +211,6 @@ if __name__ ==  "__main__":
     c = Converter()
     #c.conta_barra(sys.argv[1])
     #c.concatenacao_implicita(sys.argv[1])
-    c.validacao_posfixa(
-        c.infixa_posfixa(
-        c.concatenacao_implicita(
-        c.remove_whitespace(sys.argv[1]))))
+    print(c.remove_whitespace(sys.argv[1]))
+    c.validacao_posfixa(c.infixa_posfixa(c.concatenacao_implicita(c.remove_whitespace(sys.argv[1]))))
     #print(c.validacao_input(sys.argv[1]))
