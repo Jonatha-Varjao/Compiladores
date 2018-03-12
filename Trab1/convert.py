@@ -132,9 +132,9 @@ class Converter:
                 string[i+1] = ""
             elif string[i] not in self.tokens:
                 self.lista.append(string[i])
-            elif string[i] == '(' and self.lista[-1] != '|' :
+            elif string[i] == '(' :
                 self.pilhaOP.append(string[i])
-            elif string[i] == ')' and self.lista[-1] != '|' :
+            elif string[i] == ')' :
                 try:
                     while(self.pilhaOP[-1] != '('):
                         self.lista.append(self.pilhaOP.pop())
