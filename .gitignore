@@ -1,2 +1,4 @@
 EnvGui/
 .vscode/
+*.pyc
+__pycache__/
