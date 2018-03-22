@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
-from tkinter import *
+from typing import List
 #Class converter infixa->posfixa
 class Converter:
     # construtor contendo
@@ -10,11 +11,8 @@ class Converter:
         self.pilhaOP = []
         self.lista = []
         self.tokens = { '+': 1, '-': 1, '*': 4, '/': 3, '.': 3, '(':0, ')':0 }
-    # TODO: o Alias do '\' para aceitar operando/operadores como operando
-    # Ex :   Infixa: a+|+ -> Posfixa: a|++
-    # TODO: Aceitar a concatenação explicita no input  
 
-    def isOperando(self, palavra):
+    def isOperando(self, palavra: str) -> str:
         # melhorar isso aqui
         # que nada...deixa assim mesmo 
         if palavra != '+' and palavra != '-' and palavra !=  '/' and palavra  != '(' and palavra != ')' and palavra != '*' and palavra != '.' :
@@ -23,26 +21,22 @@ class Converter:
             return False
 
     # pra nao bugar a concatenacao explicita
-    def remove_whitespace(self, string):
+    def remove_whitespace(self, string: str) -> str:
         return str(string).replace(" ","")
     
-    # Se o professor pedi pra por |( ou |) é sacanagem.....
+    # Se pedi pra por |( ou |) é sacanagem.....
     def conta_barra(self, string):
         soma = 0
         for i in range(len(string)):
             if string[i] == '(':
                 try :
-                    if string[i-1] == '|':
-                        pass
-                    else:
+                    if string[i-1] != '|':
                         soma = soma + 1
                 except:
                     soma = soma + 1
             elif string[i] == ')':
                 try :
-                    if string[i-1] == '|':
-                        pass
-                    else:
+                    if string[i-1] != '|':
                         soma = soma - 1    
                 except:
                     soma = soma - 1
@@ -50,7 +44,7 @@ class Converter:
             sys.exit("Expressao invalida: '(' e ')' ")
 
     # miu grau
-    def concatenacao_implicita(self, string):
+    def concatenacao_implicita(self, string: str) -> str:
         self.conta_barra(string)
         lista = []
         for i in range(len(string)):
@@ -119,9 +113,8 @@ class Converter:
         print("Concatenacao Implicita", lista)
         return lista
 
-    # TODO: aceitar a implementacao do |& como operando
-    def infixa_posfixa(self, string):
-        i = 0
+    # 
+    def infixa_posfixa(self, string: str) -> str:
         for i in range(len(string)):
             #print('Posfixa: ', self.lista, 'PilhaOP: ', self.pilhaOP)
             # Caractere operando
@@ -176,7 +169,6 @@ class Converter:
         #print(self.lista)
         return self.lista
         
-        
     def validacao_posfixa(self, *kwargs):
         if kwargs.__contains__(-1) or not self.lista :
             sys.exit("Expressao invalida")
@@ -201,7 +193,7 @@ class Converter:
                     else:
                         sys.exit("Expressao invalida")
             print(self.lista, self.pilhaOP)
-            op1 = self.pilhaOP.pop()
+            self.pilhaOP.pop()
             if not self.pilhaOP:
                 print("Expressao valida")
             return self.lista
