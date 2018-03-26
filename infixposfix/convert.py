@@ -141,16 +141,13 @@ class Converter:
                 if self.pilhaOP == []:
                     self.pilhaOP.append(string[i])
                 else:
-                    try:
-                        while( self.tokens.get(self.pilhaOP[-1]) >= self.tokens.get(string[i]) ):
-                            print( self.tokens.get(self.pilhaOP[-1])," > ",self.tokens.get(string[i]) )
-                            #print('Pilha antes do pop: ',self.pilhaOP)
+                    while( not self.pilhaOP ):
+                        print( self.tokens.get(self.pilhaOP[-1])," > ",self.tokens.get(string[i]) )
+                        #print('Pilha antes do pop: ',self.pilhaOP)
+                        if self.tokens.get(self.pilhaOP[-1]) >= self.tokens.get(string[i]):
                             self.lista.append(self.pilhaOP.pop())
                             #print('Lista: ',self.lista)
                             #print('Pilha depois do pop: ',self.pilhaOP)
-                    except IndexError:
-                        #self.lista.append(string[i])
-                        print('Exception: ', self.lista)
                     self.pilhaOP.append(string[i])
                     #print(self.pilhaOP)
         #print('Pilha dps de percorer a palavra: ', self.pilhaOP)
