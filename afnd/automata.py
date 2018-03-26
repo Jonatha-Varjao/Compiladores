@@ -87,10 +87,14 @@ class AFNDmV(Converter):
             try:
                 new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] = automato.matrizTransicao.get(i) + (new_automata.qtd_estados - automato.qtd_estados) - 1
             except :
+                print(i)
                 b = list(automato.matrizTransicao.get(i))
+                print(b)
                 print("automato com lista de transicoes")
-                new_list = [x+automato.qtd_estados-2 for x in b]
-                new_automata.matrizTransicao[ (i[0]+automato.qtd_estados-1, i[1] ) ] = tuple(new_list)
+                new_list = [x+1 for x in b]
+                print('transicoes ',new_list)
+                new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] = tuple(new_list)
+                print( new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] )
         
         new_automata.matrizTransicao[(0,'&')] = (1,new_automata.qtd_estados-1)
         new_automata.matrizTransicao[(automato.qtd_estados,'&')] = (new_automata.qtd_estados - automato.qtd_estados -1, new_automata.qtd_estados-1)
@@ -109,11 +113,8 @@ class AFNDmV(Converter):
         automata.alfabeto = self.uniao_alfabetos(automato1.alfabeto, automato2.alfabeto)
         automata.qtd_estados = automato1.qtd_estados + automato2.qtd_estados
        
-        print("automato1 alfabeto: ",automato1.alfabeto)
-        print("automato2 alfabeto: ",automato2.alfabeto)
-        print("automato novo alfbeto :",automata.alfabeto)
-        
-         # preencher os estados
+                
+        # preencher os estados
         automata.estados = automato1.estados.copy()
         for i in range(len(automato2.estados)):
             automata.estados.append( automato1.qtd_estados + automato2.estados[i] )
