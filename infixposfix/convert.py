@@ -10,7 +10,7 @@ class Converter:
     def __init__(self):
         self.pilhaOP = []
         self.lista = []
-        self.tokens = { '+': 1, '-': 1, '*': 4, '/': 3, '.': 3, '(':0, ')':0 }
+        self.tokens = { '+': 1, '*': 3, '.': 2, '(':0, ')':0 }
 
     def isOperando(self, palavra: str) -> str:
         # melhorar isso aqui
@@ -141,15 +141,17 @@ class Converter:
                 if self.pilhaOP == []:
                     self.pilhaOP.append(string[i])
                 else:
-                    while( not self.pilhaOP ):
-                        print( self.tokens.get(self.pilhaOP[-1])," > ",self.tokens.get(string[i]) )
-                        #print('Pilha antes do pop: ',self.pilhaOP)
-                        if self.tokens.get(self.pilhaOP[-1]) >= self.tokens.get(string[i]):
+                    try:
+                        while( self.tokens.get(self.pilhaOP[-1]) >= self.tokens.get(string[i]) ):
+                            print( self.tokens.get(self.pilhaOP[-1])," > ",self.tokens.get(string[i]) )
+                            #print('Pilha antes do pop: ',self.pilhaOP)
                             self.lista.append(self.pilhaOP.pop())
                             #print('Lista: ',self.lista)
                             #print('Pilha depois do pop: ',self.pilhaOP)
+                    except IndexError:
+                        #self.lista.append(string[i])
+                        print('Exception: ', self.lista)
                     self.pilhaOP.append(string[i])
-                    #print(self.pilhaOP)
         #print('Pilha dps de percorer a palavra: ', self.pilhaOP)
         while( self.pilhaOP != [] ):
             #print("Pilha OP nao vazia ao final da leitura")
