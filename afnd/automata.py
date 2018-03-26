@@ -3,6 +3,7 @@ import os
 import sys
 sys.path.append('/home/jonatha/Documentos/GitClones/Compiladores/')
 import uuid
+from typing import *
 from infixposfix.convert import Converter
 
 class State():
@@ -73,8 +74,34 @@ class AFNDmV(Converter):
         return automato.matrizTransicao.get((estado,simbolo))
 
     def fecho_kleene(self, automato):
+        new_automata = AFNDmV()
+        new_automata.alfabeto = self.uniao_alfabetos([""], automato.alfabeto)
+
+        new_automata.qtd_estados = automato.qtd_estados + 2
+        # preenchendo os estados do novo automato 
+        for i in range(len(automato.estados)):
+            new_automata.estados.append(i)
+
+        # preenchendo as transicoes do automato1 no automato novo
+        for i in automato.matrizTransicao.keys():
+            try:
+                new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] = automato.matrizTransicao.get(i) + (new_automata.qtd_estados - automato.qtd_estados) - 1
+            except :
+                b = list(automato.matrizTransicao.get(i))
+                print("automato com lista de transicoes")
+                new_list = [x+automato.qtd_estados-2 for x in b]
+                new_automata.matrizTransicao[ (i[0]+automato.qtd_estados-1, i[1] ) ] = tuple(new_list)
         
-        pass
+        new_automata.matrizTransicao[(0,'&')] = (1,new_automata.qtd_estados-1)
+        new_automata.matrizTransicao[(automato.qtd_estados,'&')] = (new_automata.qtd_estados - automato.qtd_estados -1, new_automata.qtd_estados-1)
+
+
+
+        new_automata.estado_inicial = 0
+        new_automata.estado_final = new_automata.qtd_estados-1
+        new_automata.qtd_estado_final = 1
+         
+        return new_automata
 
     # funfando
     def concatenacao(self, automato1, automato2):
@@ -198,10 +225,12 @@ class AFNDmV(Converter):
                         elif simbolo == '.':
                             print("Concatenacao")
                             self.pilhaAutomato.append( self.concatenacao(op1,op2) )
+        
         afn = self.pilhaAutomato.pop()
+        print(afn.matrizTransicao)
         if not self.pilhaAutomato:
             print(afn)
-        return self.lista
+        return afn.matrizTransicao
 
     # ehSimbolo(a) : int
     # ehEstado(q)  : int
@@ -220,4 +249,4 @@ if __name__ == '__main__':
     automato        = AFNDmV()
     expression      = Converter()
     #expression.validacao_input(sys.argv[1])
-    automato.gerar_AFND((sys.argv[1]))
+    automato.gerar_AFND(expression.validacao_input(sys.argv[1]))
