@@ -3,8 +3,8 @@ import os
 import sys
 sys.path.append('/home/jonatha/Documentos/GitClones/Compiladores/')
 import uuid
-from typing import *
 from infixposfix.convert import Converter
+import collections
 
 class State():
     def __init__(self, state_id=None):
@@ -34,7 +34,6 @@ class State():
         return str(self.get_id())[:5]
 
 
-
 class AFNDmV(Converter):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -62,7 +61,7 @@ class AFNDmV(Converter):
         return automata
     
     # uniao alfabeto miu grau
-    def uniao_alfabetos(self, alfabeto1, alfabeto2):
+    def uniao_alfabetos(self, alfabeto1: object, alfabeto2: object)-> object:
         new_alphabet = alfabeto1.copy()
         for i in range(len(alfabeto2)):
             if not alfabeto2[i] in alfabeto1:
@@ -70,10 +69,10 @@ class AFNDmV(Converter):
         return new_alphabet
 
     # nem to usando mas deixa queto aqui
-    def funcao_transicao(self, automato, estado, simbolo)-> int :
+    def funcao_transicao(self, automato: object, estado: int, simbolo: str)-> int :
         return automato.matrizTransicao.get((estado,simbolo))
 
-    def fecho_kleene(self, automato):
+    def fecho_kleene(self, automato: object)->object:
         new_automata = AFNDmV()
         new_automata.alfabeto = self.uniao_alfabetos([""], automato.alfabeto)
 
@@ -108,7 +107,7 @@ class AFNDmV(Converter):
         return new_automata
 
     # funfando
-    def concatenacao(self, automato1, automato2):
+    def concatenacao(self, automato1: object, automato2: object)-> object:
         automata = AFNDmV()
         automata.alfabeto = self.uniao_alfabetos(automato1.alfabeto, automato2.alfabeto)
         automata.qtd_estados = automato1.qtd_estados + automato2.qtd_estados
@@ -151,7 +150,7 @@ class AFNDmV(Converter):
         return automata
 
     # gege
-    def uniao(self, automato1, automato2):
+    def uniao(self, automato1: object, automato2: object) -> object:
         automata = AFNDmV()
         automata.alfabeto = self.uniao_alfabetos(automato1.alfabeto, automato2.alfabeto)
         automata.qtd_estados = automato1.qtd_estados + automato2.qtd_estados + 2
@@ -204,7 +203,7 @@ class AFNDmV(Converter):
         return automata
 
     
-    def gerar_AFND(self, posfixa: str):
+    def gerar_AFND(self, posfixa: str)->str:
         for i in range(len(posfixa)):
             simbolo = posfixa[i]
             #print(self.pilhaAutomato)
@@ -228,10 +227,13 @@ class AFNDmV(Converter):
                             self.pilhaAutomato.append( self.concatenacao(op1,op2) )
         
         afn = self.pilhaAutomato.pop()
-        print(afn.matrizTransicao)
         if not self.pilhaAutomato:
-            print(afn)
+            print(afn.matrizTransicao)
+        ordered_afn = collections.OrderedDict(sorted(afn.matrizTransicao.items()))
+        afn.matrizTransicao = dict(ordered_afn)
+        print(afn.matrizTransicao)
         return afn.matrizTransicao
+
 
     # ehSimbolo(a) : int
     # ehEstado(q)  : int
