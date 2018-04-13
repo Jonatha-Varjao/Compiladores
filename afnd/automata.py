@@ -280,5 +280,4 @@ if __name__ == '__main__':
     expression      = Converter()
     #expression.validacao_input(sys.argv[1])
     transicoes = automato.gerar_AFND(expression.validacao_input(sys.argv[1]))
-    print(transicoes)
-    #automato.calcular_fechoE(transicoes)
+    automato.calcular_fechoE(transicoes)
