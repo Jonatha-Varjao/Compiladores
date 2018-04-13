@@ -231,25 +231,54 @@ class AFNDmV(Converter):
             print(afn.matrizTransicao)
         ordered_afn = collections.OrderedDict(sorted(afn.matrizTransicao.items()))
         afn.matrizTransicao = dict(ordered_afn)
+        print(len(afn.matrizTransicao.keys()))
+        afn.matrizTransicao.update( {(len(afn.matrizTransicao.keys()), '*'): None } )
         print(afn.matrizTransicao)
+        print(type(afn.matrizTransicao))
         return afn.matrizTransicao
 
+    def calcular_fechoE(self, transicoes: dict) -> []:
+        fecho_E = []
 
-    # ehSimbolo(a) : int
-    # ehEstado(q)  : int
-    # ehEstadoFinal(q) : bool
-    # funcaoTransicao(q,a) : int[]
-    # funcaoTransicaoEstendida(q, w) : int[]
-    # renomeiaEstado(q,nome) : bool
-    # uneAlfabetos(alfabeto1,alfabeto2) : bool
-    # uneEstado(estados1,estado2) : bool
-    # fechoE(q) : int[]
-    # afd() : NULL
-    # minimizaAFD() : NULL
+        for keys in transicoes:
+            print(keys[0])
+            fecho_E.append(self.fechoE(transicoes, keys[0]))
+            print(fecho_E)
+        
+        return fecho_E
+
+    def fechoE(self, transicoes: dict, estado_atual: int) -> []:
+        #print(transicoes)
+        fecho_E = []
+        fecho_E.append(estado_atual)
+        
+        if (estado_atual,'&') in transicoes.keys():
+            try:
+                for i in transicoes.get((estado_atual,'&')):
+                    fecho_E += self.fechoE(transicoes, i)
+            except:
+                fecho_E += self.fechoE(transicoes, transicoes.get((estado_atual,'&')))
+        #print(fecho_E)
+        return fecho_E
+
+
+    #TODO ehSimbolo(a) : int
+    #TODO ehEstado(q)  : int
+    #TODO ehEstadoFinal(q) : bool
+    #TODO funcaoTransicao(q,a) : int[]
+    #TODO funcaoTransicaoEstendida(q, w) : int[]
+    #TODO renomeiaEstado(q,nome) : bool
+    #TODO uneAlfabetos(alfabeto1,alfabeto2) : bool
+    #TODO uneEstado(estados1,estado2) : bool
+    #TODO fechoE(q) : int[]
+    #TODO afd() : NULL
+    #TODO minimizaAFD() : NULL
 
 
 if __name__ == '__main__':
     automato        = AFNDmV()
     expression      = Converter()
     #expression.validacao_input(sys.argv[1])
-    automato.gerar_AFND(expression.validacao_input(sys.argv[1]))
+    transicoes = automato.gerar_AFND(expression.validacao_input(sys.argv[1]))
+    print(transicoes)
+    #automato.calcular_fechoE(transicoes)
