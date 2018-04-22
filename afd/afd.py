@@ -31,27 +31,36 @@ class AFD(AFNDmV):
         afd = {}
         print(estados)
         print('Estado final', afnd.estado_final)
+        print('Alfabeto:', afnd.alfabeto)
         # percorre os estados iniciais do fecho_E[0]
         for itens in estados:
             print("Estados", estados)
             for j in afnd.alfabeto:
-                print("Alfabeto", j)
+                print(afd)
                 for i in itens:
-                    print(i,j)
+                    print('Estado: ', itens)
+                    print('Estado[i]:',i,'Simbolo:',j)
                     print(matrizTransicao.get((i,j)))
                     if matrizTransicao.get((i,j)) != None:
                         new_state.append(fecho_E[matrizTransicao.get((i,j))])
                         estados += new_state.copy()
                         print(estados)
-                print("Novo Estado", new_state)
-                if new_state == []:
-                    print("Estado de erro")
-                elif afnd.estado_final in itens:
-                    print("Estado Final")
-                    afd[ (tuple(itens), 'Estado Final', j) ] = new_state[0]
-                else:
-                    afd[ (tuple(itens), j) ] = new_state[0]       
+                if not new_state:
+                    new_state = ['$']
+                    print('Novo Estado Vazio',new_state)
+                    if new_state in estados:
+                        print('novo estado ta na lista de estados')
+                    else:
+                        estados.append(['$'])
+                        print(new_state,estados)
+                elif new_state not in estados:
+                    if afnd.estado_final in itens:
+                        afd[ (tuple(itens), j,'final') ] = new_state[0]       
+                    else:
+                        afd[ (tuple(itens), j) ] = new_state[0]       
                     new_state.clear()
+                print('new state limpo',new_state)
+            break
 
         print(estados)
         print(afd)
@@ -109,4 +118,4 @@ if __name__ == '__main__':
     automato = automato.gerar_AFND(automato.validacao_input(sys.argv[1]))
     #representacao do fechos epslon do afnd-e
     afd.calcular_fechoE(automato)
-    #afd.afd(automato, afd.fecho_E, automato.matrizTransicao)
+    afd.afd(automato, afd.fecho_E, automato.matrizTransicao)
