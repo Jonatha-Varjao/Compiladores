@@ -231,11 +231,11 @@ class AFNDmV(Converter):
             print(afn.matrizTransicao)
         ordered_afn = collections.OrderedDict(sorted(afn.matrizTransicao.items()))
         afn.matrizTransicao = dict(ordered_afn)
-        #print(len(afn.matrizTransicao.keys()))
-        afn.matrizTransicao.update( {(len(afn.matrizTransicao.keys()), '*'): None } )
+        afn.matrizTransicao.update( {(len(afn.matrizTransicao.keys()), 'Final'): None } )
         print("Transicoes: ", afn.matrizTransicao)
         print("Alfabeto: ", afn.alfabeto)
         print("Estado Final: ", afn.estado_final)
+        afn.alfabeto.remove('')
         return afn
 
     
