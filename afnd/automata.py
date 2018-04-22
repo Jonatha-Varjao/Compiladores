@@ -43,7 +43,7 @@ class AFNDmV(Converter):
         self.matrizTransicao = {} # [][]
         self.estado_inicial = 0
         self.qtd_estado_final = 0
-        self.estados_final = []
+        self.estado_final = 0
         self.pilhaAutomato = [AFNDmV]
     
     # base miu grau
@@ -56,7 +56,7 @@ class AFNDmV(Converter):
         automata.matrizTransicao[(0,simbolo)] = 1
         automata.estado_inicial = 0
         automata.qtd_estado_final = 1
-        automata.estados_final.append(0)
+        automata.estados_final = 1
         
         return automata
     
@@ -86,14 +86,14 @@ class AFNDmV(Converter):
             try:
                 new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] = automato.matrizTransicao.get(i) + (new_automata.qtd_estados - automato.qtd_estados) - 1
             except :
-                print(i)
+                #print(i)
                 b = list(automato.matrizTransicao.get(i))
-                print(b)
-                print("automato com lista de transicoes")
+                #print(b)
+                #print("automato com lista de transicoes")
                 new_list = [x+1 for x in b]
-                print('transicoes ',new_list)
+                #print('transicoes ',new_list)
                 new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] = tuple(new_list)
-                print( new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] )
+                #print( new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] )
         
         new_automata.matrizTransicao[(0,'&')] = (1,new_automata.qtd_estados-1)
         new_automata.matrizTransicao[(automato.qtd_estados,'&')] = (new_automata.qtd_estados - automato.qtd_estados -1, new_automata.qtd_estados-1)
@@ -117,10 +117,10 @@ class AFNDmV(Converter):
         automata.estados = automato1.estados.copy()
         for i in range(len(automato2.estados)):
             automata.estados.append( automato1.qtd_estados + automato2.estados[i] )
-        print(automata.estados)
+        #print(automata.estados)
         
         # preencher as transicoes
-        print(automata.matrizTransicao, automato1.matrizTransicao, automato2.matrizTransicao)
+        #print(automata.matrizTransicao, automato1.matrizTransicao, automato2.matrizTransicao)
         # transicoes do automato 1
         # copiar transaçõe do automato 1
         automata.matrizTransicao = automato1.matrizTransicao.copy()
@@ -137,15 +137,15 @@ class AFNDmV(Converter):
 
         # preencher final automato 1 + '&' -> 2 
         automata.matrizTransicao[(automato1.qtd_estados-1, '&')] = automato1.qtd_estados
-        print(automata.matrizTransicao)
+        #print(automata.matrizTransicao)
         #
 
         automata.estado_inicial   = 0
         automata.estado_final     = automata.qtd_estados-1
         automata.qtd_estado_final = 1
         
-        print("estado inicial:", automata.estado_inicial)
-        print("estado final:", automata.estado_final)
+        #print("estado inicial:", automata.estado_inicial)
+        #print("estado final:", automata.estado_final)
 
         return automata
 
@@ -165,13 +165,13 @@ class AFNDmV(Converter):
         for i in automato1.matrizTransicao.keys():
             try:
                 automata.matrizTransicao[ (i[0]+1, i[1] ) ] = automato1.matrizTransicao.get(i) + 1
-                print(automata.matrizTransicao)
+                #print(automata.matrizTransicao)
             except TypeError :
-                print(automato1.matrizTransicao.get(i))
+                #print(automato1.matrizTransicao.get(i))
                 b = list(automato1.matrizTransicao.get(i))
                 new_list = [x+1 for x in b]
                 automata.matrizTransicao[ (i[0]+1, i[1] ) ] = tuple(new_list)
-        print("Transicao 1", automata.matrizTransicao)
+        #print("Transicao 1", automata.matrizTransicao)
         # transicao do automato 2       
         for i in automato2.matrizTransicao.keys():
             try: 
@@ -180,21 +180,21 @@ class AFNDmV(Converter):
                 b = list(automato2.matrizTransicao.get(i))
                 new_list = [x+automato1.qtd_estados + 1 for x in b]
                 automata.matrizTransicao[ (i[0]+automato1.qtd_estados + 1, i[1] ) ] = tuple(new_list)
-        print("Transicao 2", automata.matrizTransicao)
+        #print("Transicao 2", automata.matrizTransicao)
         # chave existe automato 1
-        print (automato1.qtd_estados)
+        #print (automato1.qtd_estados)
         if ((automato1.qtd_estados, '&')) in automata.matrizTransicao.keys():
             automata.matrizTransicao[(automato1.qtd_estados,'&')] = automato1.matrizTransicao.get((automato1.qtd_estados, '&')), automata.qtd_estados-1
         else:
             automata.matrizTransicao[(automato1.qtd_estados,'&')] = automata.qtd_estados-1
-        print("Transicao if 1", automata.matrizTransicao)
+        #print("Transicao if 1", automata.matrizTransicao)
         # chave existe automato 2
-        print (automato2.qtd_estados+automato1.qtd_estados)
+        #print (automato2.qtd_estados+automato1.qtd_estados)
         if (automato2.qtd_estados+automato1.qtd_estados, '&') in automata.matrizTransicao.keys():
             automata.matrizTransicao[( automato2.qtd_estado+automato1.qtd_estados,'&')] = automato2.matrizTransicao.get((automato2.qtd_estados+automato1.qtd_estados, '&')), automata.qtd_estados-1
         else:
             automata.matrizTransicao[(automato2.qtd_estados + automato1.qtd_estados,'&')] = automata.qtd_estados-1
-        print("Transicao if 2", automata.matrizTransicao)
+        #print("Transicao if 2", automata.matrizTransicao)
 
         automata.estado_inicial   = 0
         automata.estado_final     = automata.qtd_estados-1
@@ -231,35 +231,14 @@ class AFNDmV(Converter):
             print(afn.matrizTransicao)
         ordered_afn = collections.OrderedDict(sorted(afn.matrizTransicao.items()))
         afn.matrizTransicao = dict(ordered_afn)
-        print(len(afn.matrizTransicao.keys()))
+        #print(len(afn.matrizTransicao.keys()))
         afn.matrizTransicao.update( {(len(afn.matrizTransicao.keys()), '*'): None } )
-        print(afn.matrizTransicao)
-        print(type(afn.matrizTransicao))
-        return afn.matrizTransicao
+        print("Transicoes: ", afn.matrizTransicao)
+        print("Alfabeto: ", afn.alfabeto)
+        print("Estado Final: ", afn.estado_final)
+        return afn
 
-    def calcular_fechoE(self, transicoes: dict) -> []:
-        fecho_E = []
-
-        for keys in transicoes:
-            print(keys[0])
-            fecho_E.append(self.fechoE(transicoes, keys[0]))
-            print(fecho_E)
-        
-        return fecho_E
-
-    def fechoE(self, transicoes: dict, estado_atual: int) -> []:
-        #print(transicoes)
-        fecho_E = []
-        fecho_E.append(estado_atual)
-        
-        if (estado_atual,'&') in transicoes.keys():
-            try:
-                for i in transicoes.get((estado_atual,'&')):
-                    fecho_E += self.fechoE(transicoes, i)
-            except:
-                fecho_E += self.fechoE(transicoes, transicoes.get((estado_atual,'&')))
-        #print(fecho_E)
-        return fecho_E
+    
 
 
     #TODO ehSimbolo(a) : int
@@ -279,5 +258,4 @@ if __name__ == '__main__':
     automato        = AFNDmV()
     expression      = Converter()
     #expression.validacao_input(sys.argv[1])
-    transicoes = automato.gerar_AFND(expression.validacao_input(sys.argv[1]))
-    automato.calcular_fechoE(transicoes)
+    
