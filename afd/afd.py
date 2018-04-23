@@ -15,7 +15,7 @@ class AFD(AFNDmV):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.fecho_E = []
-        self.estados_finais = []
+        
     
     def rename_state(self, estados: []) -> []:
         pass
@@ -28,42 +28,78 @@ class AFD(AFNDmV):
         estados = []
         estados.append(fecho_E[0])
         new_state = []
-        afd = {}
+        fechos = []
+        transicoes = []
+        afd_Transicoes = {}
         print(estados)
         print('Estado final', afnd.estado_final)
         print('Alfabeto:', afnd.alfabeto)
+        
         # percorre os estados iniciais do fecho_E[0]
         for itens in estados:
-            print("Estados", estados)
             for j in afnd.alfabeto:
-                print(afd)
                 for i in itens:
-                    print('Estado: ', itens)
                     print('Estado[i]:',i,'Simbolo:',j)
-                    print(matrizTransicao.get((i,j)))
+                    print('Transicao: ',matrizTransicao.get((i,j)))
+                    # pego os estados pra dps calcular seus fechos
                     if matrizTransicao.get((i,j)) != None:
-                        new_state.append(fecho_E[matrizTransicao.get((i,j))])
-                        estados += new_state.copy()
-                        print(estados)
+                        #new_state.append(fecho_E[matrizTransicao.get((i,j))])
+                        fechos.append(matrizTransicao.get((i,j)))
+                # apos o termino dos estados calcula-se seus fechos
+                print(fechos)
+                for i in fechos:
+                    print(i)
+                    transicoes += fecho_E[i]
+                new_state += (list(set(transicoes)))
+                print('new_state',new_state)
+                # se o new_state for vazia estado representa erro -> '$' = ERRO
                 if not new_state:
                     new_state = ['$']
                     print('Novo Estado Vazio',new_state)
-                    if new_state in estados:
+                    # adiciona o erro na lista de estados
+                    if new_state not in estados:
                         print('novo estado ta na lista de estados')
-                    else:
                         estados.append(['$'])
-                        print(new_state,estados)
-                elif new_state not in estados:
+                    # se o estado final estiver indo pra o estado de erro, adicionar nas transicoes
                     if afnd.estado_final in itens:
-                        afd[ (tuple(itens), j,'final') ] = new_state[0]       
+                        print("Final -> adiciona index 'final' na tupla do afd")
+                        afd_Transicoes[ (tuple(itens), j,'final') ] = new_state.copy()     
                     else:
-                        afd[ (tuple(itens), j) ] = new_state[0]       
-                    new_state.clear()
+                        afd_Transicoes[ (tuple(itens), j) ] = new_state.copy()
+                # novo estado != vazio e nao ta lista de estados
+                elif new_state not in estados:
+                    print("novo estado econtrado")
+                    # estado final contem no novo estado
+                    if afnd.estado_final in itens:
+                        print("Final -> adiciona index 'final' na tupla do afd")
+                        afd_Transicoes[ (tuple(itens), j,'final') ] = new_state.copy()     
+                    else:
+                        afd_Transicoes[ (tuple(itens), j) ] = new_state.copy()
+                    print("adicionando o novo estado")
+                    estados.append(new_state.copy())  
+                    print('Estados',estados)  
+                # estado na lista de estados
+                else:
+                    if afnd.estado_final in itens:
+                        print("Final -> adiciona index 'final' na tupla do afd")
+                        afd_Transicoes[ (tuple(itens), j,'final') ] = new_state.copy()     
+                    else:
+                        afd_Transicoes[ (tuple(itens), j) ] = new_state.copy()
+                # limpando os vetores
+                new_state.clear()
+                transicoes.clear()
+                fechos.clear()
                 print('new state limpo',new_state)
-            break
-
+        
+        # atribuições do objetdo que representa o afd
+        afd = AFD(afnd)
+        afd.matrizTransicao = afd_Transicoes
+        afd.fecho_E = fecho_E
         print(estados)
-        print(afd)
+        print(afd.matrizTransicao)
+        print(afd.fecho_E)
+        
+        return afd
             # adicionar os conjuntos novos 
     
     
@@ -76,6 +112,7 @@ class AFD(AFNDmV):
     def calcular_fechoE(self, automato: object) -> []:
         '''
             Recebe as transicoes do automato e calcula os fechos de cada estado
+            TODO: tentar fazer DP, passando lista de estados já visitados e calculados
         '''
         print(automato.alfabeto)
         for keys in automato.matrizTransicao:
