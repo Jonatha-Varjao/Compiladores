@@ -66,6 +66,8 @@ class AFNDmV(Converter):
         for i in range(len(alfabeto2)):
             if not alfabeto2[i] in alfabeto1:
                 new_alphabet.append(alfabeto2[i])
+        if '' in new_alphabet:
+            new_alphabet.remove('')
         return new_alphabet
 
     # nem to usando mas deixa queto aqui
@@ -235,7 +237,7 @@ class AFNDmV(Converter):
         print("Transicoes: ", afn.matrizTransicao)
         print("Alfabeto: ", afn.alfabeto)
         print("Estado Final: ", afn.estado_final)
-        afn.alfabeto.remove('')
+        
         return afn
 
     
