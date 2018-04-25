@@ -2,3 +2,4 @@ EnvGui/
 .vscode/
 *.pyc
 __pycache__/
+FlaskEnv/
