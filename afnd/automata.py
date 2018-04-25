@@ -77,12 +77,10 @@ class AFNDmV(Converter):
     def fecho_kleene(self, automato: object)->object:
         new_automata = AFNDmV()
         new_automata.alfabeto = self.uniao_alfabetos([""], automato.alfabeto)
-
         new_automata.qtd_estados = automato.qtd_estados + 2
         # preenchendo os estados do novo automato 
         for i in range(len(automato.estados)):
             new_automata.estados.append(i)
-
         # preenchendo as transicoes do automato1 no automato novo
         for i in automato.matrizTransicao.keys():
             try:
@@ -96,12 +94,8 @@ class AFNDmV(Converter):
                 #print('transicoes ',new_list)
                 new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] = tuple(new_list)
                 #print( new_automata.matrizTransicao[ (i[0]+1, i[1] ) ] )
-        
         new_automata.matrizTransicao[(0,'&')] = (1,new_automata.qtd_estados-1)
         new_automata.matrizTransicao[(automato.qtd_estados,'&')] = (new_automata.qtd_estados - automato.qtd_estados -1, new_automata.qtd_estados-1)
-
-
-
         new_automata.estado_inicial = 0
         new_automata.estado_final = new_automata.qtd_estados-1
         new_automata.qtd_estado_final = 1
@@ -113,14 +107,11 @@ class AFNDmV(Converter):
         automata = AFNDmV()
         automata.alfabeto = self.uniao_alfabetos(automato1.alfabeto, automato2.alfabeto)
         automata.qtd_estados = automato1.qtd_estados + automato2.qtd_estados
-       
-                
         # preencher os estados
         automata.estados = automato1.estados.copy()
         for i in range(len(automato2.estados)):
             automata.estados.append( automato1.qtd_estados + automato2.estados[i] )
         #print(automata.estados)
-        
         # preencher as transicoes
         #print(automata.matrizTransicao, automato1.matrizTransicao, automato2.matrizTransicao)
         # transicoes do automato 1
@@ -135,32 +126,24 @@ class AFNDmV(Converter):
                 b = list(automato2.matrizTransicao.get(i))
                 new_list = [x+automato1.qtd_estados for x in b]
                 automata.matrizTransicao[ (i[0]+automato1.qtd_estados, i[1] ) ] = tuple(new_list)
-            
-
         # preencher final automato 1 + '&' -> 2 
         automata.matrizTransicao[(automato1.qtd_estados-1, '&')] = automato1.qtd_estados
         #print(automata.matrizTransicao)
-        #
-
         automata.estado_inicial   = 0
         automata.estado_final     = automata.qtd_estados-1
         automata.qtd_estado_final = 1
-        
         #print("estado inicial:", automata.estado_inicial)
         #print("estado final:", automata.estado_final)
-
         return automata
-
+    
     # gege
     def uniao(self, automato1: object, automato2: object) -> object:
         automata = AFNDmV()
         automata.alfabeto = self.uniao_alfabetos(automato1.alfabeto, automato2.alfabeto)
         automata.qtd_estados = automato1.qtd_estados + automato2.qtd_estados + 2
-        
         # preencher os etados
         for i in range(automata.qtd_estados):
             automata.estados.append(i)
-
         # preencher as transicoes
         automata.matrizTransicao[(0,'&')] = automato1.estado_inicial + 1, automato2.estado_inicial + automato1.qtd_estados +1 
         # transicao do automato 1
@@ -197,13 +180,11 @@ class AFNDmV(Converter):
         else:
             automata.matrizTransicao[(automato2.qtd_estados + automato1.qtd_estados,'&')] = automata.qtd_estados-1
         #print("Transicao if 2", automata.matrizTransicao)
-
         automata.estado_inicial   = 0
         automata.estado_final     = automata.qtd_estados-1
         automata.qtd_estado_final = 1
         
         return automata
-
     
     def gerar_AFND(self, posfixa: str)->str:
         for i in range(len(posfixa)):
@@ -227,7 +208,6 @@ class AFNDmV(Converter):
                         elif simbolo == '.':
                             print("Concatenacao")
                             self.pilhaAutomato.append( self.concatenacao(op1,op2) )
-        
         afn = self.pilhaAutomato.pop()
         if not self.pilhaAutomato:
             print(afn.matrizTransicao)
@@ -239,9 +219,6 @@ class AFNDmV(Converter):
         print("Estado Final: ", afn.estado_final)
         
         return afn
-
-    
-
 
     #TODO ehSimbolo(a) : int
     #TODO ehEstado(q)  : int
