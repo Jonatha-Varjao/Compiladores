@@ -17,43 +17,7 @@ app = Flask(__name__)
 def index():
     return render_template("main_page.html")
 
-
-@app.route('/', methods=['POST'])
-def my_form_post():
-    afd = AFD()
-    afnd = AFNDmV()
-    text = request.form['regex']
-    try:
-        ExpressaoPosfixa = afnd.validacao_input(text)
-        print('PreFixa: ', text)
-        print('PosFixa: ', ExpressaoPosfixa)
-        afnd = afnd.gerar_AFND(ExpressaoPosfixa)
-        print(afnd.matrizTransicao)
-        # representacao do fechos epslon do afnd-e
-        strAFND_E = afnd.matrizTransicao
-        afd.calcular_fechoE(afnd)
-        afd = afd.afd(afnd, afd.fecho_E, afnd.matrizTransicao)
-        fecho_E = afd.fecho_E
-        #print(strExpressao, strAFND)
-        strExpressao = ''.join(ExpressaoPosfixa)
-        print(strExpressao)
-        # limpando as variaveis do submit do forms ( cade o js ??)
-        del text
-        ExpressaoPosfixa.clear()
-        # retornando a reposta do submit passando as variaveis pra plotar o html
-        # ,strAFD=strAFD, fechos_E=fechos_E)
-        return render_template("main_page.html", strExpressao=strExpressao, afnd=strAFND_E, fecho_E=fecho_E, afd=afd.matrizTransicao)
-    except:
-        # caso a expressão seja inválida
-        return render_template("main_page.html", erro="Expressão Inválida")
-
-
-@app.route("/teste")
-def teste_table():
-    return render_template("main_page.html")
-
-
-@app.route("/teste", methods=['POST'])
+@app.route("/", methods=['POST'])
 def teste_table_form():
     # pegar o afnd
     # pegar o afd
@@ -71,7 +35,7 @@ def teste_table_form():
         
         # Parsers das estruturas em HTML
         TableAFND = afnd_html_table(automato)
-        TableAFD  = afnd_html_table(afd)
+        TableAFD  = afd_html_table(afd.rename_state(afd))
         fecho = fecho_html(afd.fecho_E) 
         
         del text
@@ -81,7 +45,7 @@ def teste_table_form():
         return render_template("main_page.html", erro="Expressão Inválida")
 
 # Funcao pra htmlzar os fechos
-def fecho_html(fechos):
+def fecho_html(fechos: [int]):
     fecho_html = ""
     for i in range(len(fechos)):
         # lista de estados
@@ -90,7 +54,7 @@ def fecho_html(fechos):
     return Markup(fecho_html)
     
 # Funcao pra parsear o automato em uma tabela html
-def afnd_html_table(afnd):
+def afnd_html_table(afnd: object):
     # for fazendo cabeçalho da tabela
     table_html = "<table class='table table-striped table-bordered dataTable' cellspacing=0 cellpadding=5 border=1 ><tr><th class='tg-yw4l'></th>"
     for alfabeto in afnd.alfabeto:
@@ -106,15 +70,39 @@ def afnd_html_table(afnd):
             table_html += "<td class='tg-yw4l'>q"+str(i)+"</td>"   
 
         for simbolos in afnd.alfabeto:
-            print( '->q'+str(i),afnd.matrizTransicao.get((i,simbolos)) )
             if afnd.matrizTransicao.get((i,simbolos)) == None:
                 table_html += "<td class='tg-yw4l'> </td>"           
             else:
                 table_html += "<td class='tg-yw4l'>{q"+str(afnd.matrizTransicao.get((i,simbolos)))+"}</td>"   
-            
         table_html += "</tr>"
     return Markup(table_html)
 
 # Funcao pra parsear o afd em uma tablea html
-def afd_html_table(afd):
-    pass
+def afd_html_table(tupla: (object, [int])):
+    # for fazendo cabeçalho da tabela
+    print("matrizTransiacao AFD", tupla[0].matrizTransicao)
+    print("estados renomeados", tupla[1])
+    table_html = "<table class='table table-striped table-bordered dataTable' cellspacing=0 cellpadding=5 border=1 ><tr><th class='tg-yw4l'></th>"
+    for alfabeto in tupla[0].alfabeto:
+        table_html += "<th class='tg-yw4l'>"+ str(alfabeto) +"</th>"
+    table_html += "</tr>"
+    for i in range(len(tupla[1])):
+        table_html += "<tr>"
+        # testo se é final ou ñ
+        if tupla[0].matrizTransicao.get((i, tupla[0].alfabeto[0], 'final')) != None and i == 0 :
+            table_html += "<td class='tg-yw4l'>->*q"+str(i)+"</td>"
+        # final + inicial
+        elif tupla[0].matrizTransicao.get((i, tupla[0].alfabeto[0], 'final')) != None: 
+            table_html += "<td class='tg-yw4l'>*q"+str(i)+"</td>"
+        # estados 
+        else:
+            table_html += "<td class='tg-yw4l'>q"+str(i)+"</td>"
+        
+        for j in range(len(tupla[0].alfabeto)):
+            if tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j],'final')) != None:
+                table_html += "<td class='tg-yw4l'>{q"+str(tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j],'final')))+"}</td>"       
+            else:
+                table_html += "<td class='tg-yw4l'>{q"+str(tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j])))+"}</td>"       
+    table_html += "</tr>"
+
+    return Markup(table_html)
