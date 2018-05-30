@@ -54,7 +54,7 @@ class Converter:
             elif lista[-1] == '|':
                 if string[i] == '|':
                     sys.exit("Expressao invalida: |+|")
-                lista.append(string[i])
+                lista.append(lista.pop()+string[i])
             elif self.isOperando(lista[-1]):
                 # Operando + Operando -> Concatenacao Implicida
                 if self.isOperando(string[i]): 
@@ -135,7 +135,7 @@ class Converter:
                         self.lista.append(self.pilhaOP.pop())
                     self.pilhaOP.pop()
                 except (IndexError, ValueError):
-                    return -1
+                    sys.exit("Expressao invalida infixa_posfixa")
             # Caractere operando
             elif string[i] in self.tokens:
                 if self.pilhaOP == []:
@@ -160,16 +160,14 @@ class Converter:
         # limpando os '' da minha lista antes de jogar na validacao pos_fixa
         new_list = []
         for i in range(len(self.lista)):
-            if self.lista[i] == '':
-                pass
-            else:
+            if not self.lista[i] == '':
                 new_list.append(self.lista[i])
         self.lista = new_list
-        #print(self.lista)
+        
         return self.lista
         
     def validacao_posfixa(self, *kwargs):
-        if kwargs.__contains__(-1) or not self.lista :
+        if not self.lista :
             sys.exit("Expressao invalida")
         else:
             for i in range(len(self.lista)):
@@ -197,6 +195,7 @@ class Converter:
                 print("Expressao valida")
             else:
                 sys.exit("Expressao invalida")
+            
             return self.lista
 
     def validacao_input(self, expressao):
