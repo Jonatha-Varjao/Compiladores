@@ -19,8 +19,10 @@ class AFD(AFNDmV):
         self.fecho_E = []
         self.matrizTransicao = {}
         
-    # vou renomear no html
     def rename_state(self, afd: object) -> object:
+        '''
+            Renomeação dos estados para uma melhor visualização
+        '''
         chaves = []
         new_dict = {}
         for keys in afd.matrizTransicao.keys():
