@@ -14,13 +14,30 @@ class AFD(AFNDmV):
     # herdando o construtor do pai
     def __init__(self, afnd):
         # copiando o alfabeto do afnd, removendo transicao vazia
-        # como o ε é sempre o ultimo alfabeto, só copiar a lista 0 ~ -1
+        # como o & é sempre o ultimo alfabeto, só copiar a lista 0 ~ -1
         self.alfabeto = afnd.alfabeto[:-1]
         self.fecho_E = []
+        self.matrizTransicao = {}
         
     # vou renomear no html
-    def rename_state(self, estados: []) -> []:
-        pass
+    def rename_state(self, afd: object) -> object:
+        chaves = []
+        new_dict = {}
+        for keys in afd.matrizTransicao.keys():
+            if keys[0] not in chaves:
+                chaves.append(keys[0])
+        # renomealos tanto na chave, quanto no valor
+        for keys in afd.matrizTransicao.keys():
+            # manter o 'final' na nova chave
+            if 'final' in keys:
+                new_dict[ ( chaves.index(tuple(keys[0])), keys[1], keys[2] ) ] = chaves.index(tuple(afd.matrizTransicao.get(keys)))
+            else:
+                # chave nova nao final
+                new_dict[ ( chaves.index(tuple(keys[0])), keys[1] ) ] = chaves.index(tuple(afd.matrizTransicao.get(keys)))
+        afd.matrizTransicao = new_dict
+        print('novas chaves', new_dict.keys())
+        return (afd, chaves)
+
     
     def gerar_AFD(self, afnd: object, fecho_E: [int], matrizTransicao: dict ) -> object:
         '''
@@ -127,15 +144,15 @@ class AFD(AFNDmV):
         fecho_E = []
         fecho_E.append(estado_atual)
         #print("estado atual: ", estado_atual)
-        if (estado_atual,'ε') in transicoes.keys():
-            # lista de estados alcançados pelo fecho-ε
+        if (estado_atual,'&') in transicoes.keys():
+            # lista de estados alcançados pelo fecho-&
             try:
-                for i in transicoes.get((estado_atual,'ε')):
+                for i in transicoes.get((estado_atual,'&')):
                     if not (i in self.fecho_E): 
                         fecho_E += self.fechoE(transicoes, i)
-            # só um estado alcançável pelo fecho-ε
+            # só um estado alcançável pelo fecho-&
             except:
-                fecho_E += self.fechoE(transicoes, transicoes.get((estado_atual,'ε')))
+                fecho_E += self.fechoE(transicoes, transicoes.get((estado_atual,'&')))
 
         return fecho_E
 
@@ -154,18 +171,6 @@ if __name__ == '__main__':
         Futura funcao pra transformar em uma tabela html
     '''
     print("afnd alfabeto",automato.alfabeto)
-    for keys in afd.matrizTransicao.keys():
-        print(keys[0])
-        for simbolos in afd.alfabeto:
-            pass
-
-        # for simbolos in afd.alfabeto:
-        #     # estado inicial
-        #     if i == 0:
-        #         print( '->q'+str(i),afd.matrizTransicao.get((i,simbolos)) )    
-        #     # estado final
-        #     elif i == len(afd.matrizTransicao.keys())-1:
-        #         print( '*q'+str(i),afd.matrizTransicao.get((i,simbolos)) )    
-        #     else:
-        #         print( 'q'+str(i) ,afd.matrizTransicao.get((i,simbolos)) )
-
+    # mapeamento dos novos estados do afd.
+    afd = afd.rename_state(afd)
+    print(afd[0].matrizTransicao)
