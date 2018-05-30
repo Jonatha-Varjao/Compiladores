@@ -195,6 +195,8 @@ class Converter:
             self.pilhaOP.pop()
             if not self.pilhaOP:
                 print("Expressao valida")
+            else:
+                sys.exit("Expressao invalida")
             return self.lista
 
     def validacao_input(self, expressao):
