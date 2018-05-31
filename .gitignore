@@ -3,4 +3,3 @@ EnvGui/
 *.pyc
 __pycache__/
 FlaskEnv/
-templates/
