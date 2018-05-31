@@ -56,7 +56,7 @@ class AFNDmV(Converter):
         automata.matrizTransicao[(0,simbolo)] = 1
         automata.estado_inicial = 0
         automata.qtd_estado_final = 1
-        automata.estados_final = 1
+        automata.estado_final = 1
         
         return automata
     
