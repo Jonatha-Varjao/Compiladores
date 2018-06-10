@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-sys.path.append('/home/jonatha/Documentos/GitClones/Compiladores/')
+sys.path.append('../Compiladores/')
 #import uuid
 #from typing import *
 from afnd.automata import AFNDmV
