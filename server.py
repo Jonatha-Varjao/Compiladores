@@ -1,7 +1,7 @@
 
 # A very simple Flask Hello World app for you to get started with...
 
-from flask import Flask, render_template, request, Markup
+from flask import Flask, render_template, request, Markup, escape
 
 '''
     Import dos trabalhos de compiladores
@@ -9,6 +9,7 @@ from flask import Flask, render_template, request, Markup
 from Compiladores.infixposfix.convert import Converter
 from Compiladores.afnd.automata import AFNDmV
 from Compiladores.afd.afd import AFD
+from Compiladores.lexico.fistfollow import *
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ def index():
     return render_template("main_page.html")
 
 @app.route("/", methods=['POST'])
-def teste_table_form():
+def infix_posfix_afnd_afd():
     afnd = AFNDmV()
     text = request.form['regex']
     try:
@@ -87,7 +88,7 @@ def afd_html_table(tupla: (object, [int])):
         table_html += "<th class='tg-yw4l'>"+ str(alfabeto) +"</th>"
     table_html += "</tr>"
     for i in range(len(tupla[1])):
-        table_html += "<tr>"
+        table_html += "<tr>"    
         # testo se é final ou ñ
         if tupla[0].matrizTransicao.get((i, tupla[0].alfabeto[0], 'final')) != None:
             # final + inicial
@@ -104,10 +105,60 @@ def afd_html_table(tupla: (object, [int])):
         
         for j in range(len(tupla[0].alfabeto)):
             if tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j],'final')) != None:
-                table_html += "<td class='tg-yw4l' style ='word-break:break-all;'>{q"+str(tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j],'final')))+"}</td>"       
+                table_html += "<td class='tg-yw4l' style ='word-break:break-all;'>q"+str(tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j],'final')))+"</td>"       
             else:
-                table_html += "<td class='tg-yw4l'>{q"+str(tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j])))+"}</td>"       
+                table_html += "<td class='tg-yw4l'>q"+str(tupla[0].matrizTransicao.get((i,tupla[0].alfabeto[j])))+"</td>"       
         table_html += "</tr>"
+    table_html += "</table>"
+
+    return Markup(table_html)
+
+@app.route("/sintatica/")
+def ff_index():
+    return render_template("firstfollow.html") 
+
+
+@app.route("/sintatica/", methods=['POST'])
+def ff():
+    variaveis = request.form['variaveis']
+    terminais = request.form['terminais']
+    regras = request.form['regras']
+    partida = request.form['partida']
+    expressao = request.form['expressao']
+    first, follow = first_follow(partida,variaveis,terminais,regras)
+    tabela = tabela_sintatica(partida,variaveis,terminais,regras)
+    tabela_html = tabela_html_sintatica(tabela)
+    expressao_sintatica = analisador_sintatico(expressao, partida,variaveis,terminais,regras)
+
+    return render_template("firstfollow.html", 
+            variaveis=variaveis,
+            terminais=terminais,
+            regras=regras,
+            partida=partida,
+            expressao=expressao_sintatica,
+            first=first,
+            follow=follow,
+            tabelaSintatica=tabela_html,
+            ) 
+
+
+def tabela_html_sintatica(tabela: object):
+    table_html = "<table class='table table-bordered table-hover table-striped'><tr><th class='tg-yw4l'></th>"
+    for key in tabela[list(tabela.keys())[0]]:
+        table_html += "<th class='tg-yw4l'>"+ str(escape(key)) +"</th>"
+    table_html += "</tr>"
+
+    for key,value in tabela.items():
+        table_html += "<tr>"
+        table_html += "<td class='tg-yw4l' style ='word-break:break-all;'>"+ str(escape(key))+"</td>"
+        
+        for k,v in value.items():
+            if v != None:
+                table_html += "<td class='tg-yw4l' style ='word-break:break-all;'>"+ str(escape(v))+"</td>"
+            else:
+                table_html += "<td class='tg-yw4l' style ='word-break:break-all;'></td>"
+        table_html += "</tr>"
+    
     table_html += "</table>"
 
     return Markup(table_html)
